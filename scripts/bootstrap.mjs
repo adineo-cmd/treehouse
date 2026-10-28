@@ -1,10 +1,9 @@
 #!/usr/bin/env node
-/* Fetch the two atlases the portal combines.
+/* Bring the two atlases into this checkout.
  *
- * Meridian is a shell, not a monorepo: Memex and CareerMap stay separate
- * repositories with their own content, build and data. This script only
- * clones them next to this checkout so `npm run build` can find them.
- * Nothing is copied between them.
+ * They are submodules, not copies: `memex/` and `careermap/` each point at
+ * their own repository, which stays the place where that app's content and
+ * data live. This only fetches whatever commit this repo pins.
  */
 
 import { spawnSync } from "node:child_process";
@@ -12,26 +11,27 @@ import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
-const here = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
-const parent = path.dirname(here);
+const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 
-const APPS = [
-  { dir: "memex", url: "https://github.com/adineo-cmd/memex.git" },
-  { dir: "careermap", url: "https://github.com/adineo-cmd/careermap.git" },
-];
-
-for (const app of APPS) {
-  const target = path.join(parent, app.dir);
-  if (fs.existsSync(path.join(target, "package.json"))) {
-    console.log(`[bootstrap] ${app.dir} already checked out at ${target}`);
-    continue;
-  }
-  console.log(`[bootstrap] cloning ${app.dir} into ${target}…`);
-  const result = spawnSync("git", ["clone", "--depth", "1", app.url, target], { stdio: "inherit" });
+const run = (args, label) => {
+  const result = spawnSync("git", args, { cwd: root, stdio: "inherit" });
   if (result.status !== 0) {
-    console.error(`[bootstrap] could not clone ${app.dir}. Clone it manually as a sibling directory.`);
+    console.error(`[bootstrap] ${label} failed (exit ${result.status ?? 1}).`);
     process.exit(result.status ?? 1);
   }
+};
+
+if (!fs.existsSync(path.join(root, ".gitmodules"))) {
+  console.error("[bootstrap] no .gitmodules — this checkout is not Meridian.");
+  process.exit(1);
+}
+
+run(["submodule", "update", "--init", "--depth", "1"], "submodule update");
+
+for (const name of ["memex", "careermap"]) {
+  const dir = path.join(root, name);
+  const present = fs.existsSync(path.join(dir, "package.json"));
+  console.log(`[bootstrap] ${name}: ${present ? "ready" : "missing files"}`);
 }
 
 console.log("[bootstrap] ready — run `npm run build`, then `npm start`");

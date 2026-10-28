@@ -10,17 +10,32 @@ address. The data does not move. Each app keeps its own build, its own content
 directory, its own search index, its own API, and its own `localStorage`
 namespace. Meridian never merges records from the two repositories.
 
-## Build
+## Repository layout
 
-The build expects sibling `../memex` and `../careermap` checkouts. If they are
-not there yet, fetch them first — the script only clones them, it never copies
-one app's content into the other:
-
-```bash
-npm run bootstrap
+```
+meridian/
+├── memex/         ← submodule → adineo-cmd/memex
+├── careermap/     ← submodule → adineo-cmd/careermap
+├── scripts/
+├── src/
+└── README.md
 ```
 
-Dependencies for both apps are installed by the build itself.
+Both sites are submodules, so they stay independent repositories with their
+own content, history and data — that is where future data goes. This repo owns
+the shell that presents them under one address.
+
+## Build
+
+Fetch both submodules, then build:
+
+```bash
+npm run bootstrap   # git submodule update --init --depth 1
+npm run build       # installs each app's dependencies itself
+```
+
+`npm run build` can be narrowed: `--skip-build` assembles the site from
+already-built `dist/` trees without running either app's build.
 
 ```bash
 npm run build

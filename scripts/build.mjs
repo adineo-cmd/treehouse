@@ -14,9 +14,20 @@ import { spawnSync } from "node:child_process";
 import { fileURLToPath } from "node:url";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
-const workspace = path.resolve(root, "..");
-const memexDir = path.join(workspace, "memex");
-const careermapDir = path.join(workspace, "careermap");
+
+// Both atlases live inside this repo as submodules: memex/ and careermap/.
+// A sibling checkout still works for anyone who had the older layout.
+const locate = (name) => {
+  const inside = path.join(root, name);
+  if (fs.existsSync(path.join(inside, ".git"))) return inside;
+  const beside = path.join(path.resolve(root, ".."), name);
+  if (fs.existsSync(beside)) return beside;
+  console.error(`[meridian] ${name} is missing — run \`npm run bootstrap\` first.`);
+  process.exit(1);
+};
+
+const memexDir = locate("memex");
+const careermapDir = locate("careermap");
 const siteDir = path.join(root, "site");
 const srcDir = path.join(root, "src");
 
