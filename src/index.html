@@ -1,0 +1,309 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Meridian — pick a map and start exploring</title>
+  <meta name="description" content="Meridian is a simple front door to two maps: one for learning about the world, one for finding a career. Pick one and start exploring.">
+  <meta name="theme-color" content="#0c110e">
+  <script>
+    (() => {
+      const root = document.documentElement;
+      let theme = "dark";
+      try {
+        const saved = localStorage.getItem("meridian-theme") || localStorage.getItem("arbor-theme");
+        theme = saved === "light" || saved === "dark"
+          ? saved
+          : (window.matchMedia("(prefers-color-scheme: light)").matches ? "light" : "dark");
+      } catch {
+        /* storage can be blocked; the dark default still works */
+      }
+      root.setAttribute("data-theme", theme);
+      root.style.colorScheme = theme;
+    })();
+  </script>
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300..700&family=Inter:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/_portal/portal.css?v={{ASSET_VERSION}}">
+</head>
+<body>
+  <a class="skip-link" href="#choose">Skip to the two maps</a>
+
+  <header class="site-head">
+    <a class="brand" href="/" aria-label="Meridian map room — home">
+      <span class="brand__mark" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="none">
+          <circle cx="12" cy="12" r="8.7" stroke="currentColor" stroke-width="1.1" opacity=".75"/>
+          <ellipse cx="12" cy="12" rx="3.7" ry="8.7" stroke="currentColor" stroke-width=".9" opacity=".55"/>
+          <path d="M12 1.4v21.2M3.3 12h17.4" stroke="currentColor" stroke-width=".9" opacity=".55"/>
+          <circle cx="12" cy="12" r="1.7" fill="currentColor"/>
+        </svg>
+      </span>
+      <span class="brand__text">
+        <span class="brand__name">Meridian</span>
+        <span class="brand__tag">map room</span>
+      </span>
+    </a>
+
+    <nav class="site-nav" aria-label="Main">
+      <a href="#choose">Choose a map</a>
+      <a href="#how">How it works</a>
+      <a href="#progress">My progress</a>
+    </nav>
+
+    <div class="head-actions">
+      <button class="theme-toggle" type="button" aria-label="Switch to light theme" title="Switch to light theme">
+        <svg class="theme-toggle__sun" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+          <circle cx="12" cy="12" r="4" stroke="currentColor" stroke-width="1.6"/>
+          <path d="M12 2.5v2.4M12 19.1v2.4M2.5 12h2.4M19.1 12h2.4M5.3 5.3l1.7 1.7M17 17l1.7 1.7M18.7 5.3 17 7M7 17l-1.7 1.7" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+        </svg>
+        <svg class="theme-toggle__moon" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+          <path d="M20 14.2A8.2 8.2 0 0 1 9.8 4a8.3 8.3 0 1 0 10.2 10.2Z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/>
+        </svg>
+      </button>
+      <a class="head-start" href="#choose">Start <span aria-hidden="true">↓</span></a>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero" aria-labelledby="hero-title">
+      <div class="hero__copy">
+        <p class="eyebrow">Welcome to Meridian</p>
+        <h1 id="hero-title"><span>What do you want</span><span>to explore?</span></h1>
+        <p class="hero__lede">Pick one of the two maps below. You can always come back and try the other.</p>
+
+        <ul class="hero__reassure" aria-label="Good to know">
+          <li>
+            <svg viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="m3 8.5 3.2 3L13 4.5" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            Free
+          </li>
+          <li>
+            <svg viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="m3 8.5 3.2 3L13 4.5" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            No sign-up
+          </li>
+          <li>
+            <svg viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="m3 8.5 3.2 3L13 4.5" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            Saved on this device
+          </li>
+        </ul>
+
+        <p class="hero__hint"><a href="#choose">Pick a map below <span aria-hidden="true">↓</span></a> <span aria-hidden="true">·</span> <a href="#how">See how it works</a></p>
+      </div>
+
+      <div class="hero__sign" aria-hidden="true">
+        <svg viewBox="0 0 400 380" fill="none" focusable="false">
+          <defs>
+            <radialGradient id="signGlow">
+              <stop offset="0%" stop-color="#c69068" stop-opacity=".2"/>
+              <stop offset="65%" stop-color="#c69068" stop-opacity=".05"/>
+              <stop offset="100%" stop-color="#c69068" stop-opacity="0"/>
+            </radialGradient>
+          </defs>
+          <circle cx="200" cy="196" r="164" fill="url(#signGlow)"/>
+          <circle cx="200" cy="196" r="138" stroke="#c69068" stroke-opacity=".18" stroke-dasharray="2 10"/>
+          <path d="M200 98v248" stroke="#8e5e3f" stroke-width="12" stroke-linecap="round"/>
+          <circle cx="200" cy="96" r="12" fill="#c69068"/>
+          <path d="M72 118h206l38 30-38 30H72z" fill="#2f7d5a"/>
+          <path d="M328 208H122l-38 30 38 30h206z" fill="#c47a1b"/>
+          <text x="188" y="157" fill="#f4efe3" font-family="Inter, sans-serif" font-size="22" font-weight="700" letter-spacing="2.6" text-anchor="middle">LEARN</text>
+          <text x="212" y="247" fill="#171d18" font-family="Inter, sans-serif" font-size="22" font-weight="700" letter-spacing="2.2" text-anchor="middle">CAREER</text>
+          <path d="M60 336c46-22 92-22 140 0s94 22 140 0" stroke="#c69068" stroke-opacity=".35" stroke-width="2" stroke-dasharray="3 9" stroke-linecap="round"/>
+          <circle cx="64" cy="334" r="4" fill="#c69068" fill-opacity=".55"/>
+          <circle cx="336" cy="336" r="4" fill="#c69068" fill-opacity=".55"/>
+        </svg>
+      </div>
+    </section>
+
+    <section class="choose" id="choose" aria-labelledby="choose-title">
+      <div class="section-head">
+        <p class="eyebrow">Start here</p>
+        <h2 id="choose-title">Pick a map</h2>
+        <p>Both are free. No sign-up. Your progress stays on this device.</p>
+      </div>
+
+      <div class="choice-grid">
+        <a class="choice choice--learn" href="/memex/" aria-label="Knowledge map — learn about the world and start learning">
+          <span class="choice__top">
+            <span class="choice__badge">Knowledge map</span>
+            <span class="choice__icon" aria-hidden="true">
+              <svg viewBox="0 0 48 48" fill="none">
+                <path d="M8 11.5c6.6-2.3 13-1.4 16 2.3v24.7c-3-3.7-9.4-4.6-16-2.3V11.5Z" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round"/>
+                <path d="M40 11.5c-6.6-2.3-13-1.4-16 2.3v24.7c3-3.7 9.4-4.6 16-2.3V11.5Z" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round"/>
+                <path d="M13 19h6.5M13 25h6.5M28.5 19H35M28.5 25H35" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" opacity=".55"/>
+              </svg>
+            </span>
+          </span>
+
+          <h3>Learn about the world</h3>
+          <p>Pick a subject you are curious about — science, history, art, technology, and more.</p>
+
+          <ul class="choice__tags" aria-label="Example subjects">
+            <li>Science</li>
+            <li>History</li>
+            <li>Art</li>
+            <li>Technology</li>
+          </ul>
+
+          <span class="choice__cta">
+            <span>Start learning</span>
+            <svg class="arrow" viewBox="0 0 40 12" fill="none" aria-hidden="true"><path d="M0 6h37M32 1l6 5-6 5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </span>
+          <span class="choice__meta">{{ATLAS_FIELDS}} topics · {{ATLAS_PATHS}} learning paths</span>
+        </a>
+
+        <a class="choice choice--career" href="/careermap/" aria-label="Career map — find a career and explore careers">
+          <span class="choice__top">
+            <span class="choice__badge">Career map</span>
+            <span class="choice__icon" aria-hidden="true">
+              <svg viewBox="0 0 48 48" fill="none">
+                <circle cx="24" cy="24" r="17" stroke="currentColor" stroke-width="2.2"/>
+                <path d="m30.6 17.4-3.8 9.4-9.4 3.8 3.8-9.4 9.4-3.8Z" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round"/>
+                <circle cx="24" cy="24" r="2.1" fill="currentColor"/>
+                <path d="M24 4.5v3M24 40.5v3M4.5 24h3M40.5 24h3" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" opacity=".55"/>
+              </svg>
+            </span>
+          </span>
+
+          <h3>Find a career</h3>
+          <p>Explore jobs and follow a step-by-step path to get there.</p>
+
+          <ul class="choice__tags" aria-label="Example careers">
+            <li>Nursing</li>
+            <li>Teaching</li>
+            <li>Accounting</li>
+            <li>Trades</li>
+          </ul>
+
+          <span class="choice__cta">
+            <span>Explore careers</span>
+            <svg class="arrow" viewBox="0 0 40 12" fill="none" aria-hidden="true"><path d="M0 6h37M32 1l6 5-6 5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </span>
+          <span class="choice__meta">{{CAREER_ROADMAPS}} career paths · {{CAREER_OCCUPATIONS}} jobs</span>
+        </a>
+      </div>
+
+      <div class="not-sure">
+        <p><strong>Not sure which one?</strong> If you want to understand a subject, choose the Knowledge map. If you want to find a job, choose the Career map.</p>
+        <div class="not-sure__links">
+          <a href="/memex/">I want to learn something <span aria-hidden="true">→</span></a>
+          <a href="/careermap/">I want to find a career <span aria-hidden="true">→</span></a>
+        </div>
+      </div>
+    </section>
+
+    <section class="how" id="how" aria-labelledby="how-title">
+      <div class="section-head section-head--center">
+        <p class="eyebrow">How it works</p>
+        <h2 id="how-title">Three simple steps</h2>
+        <p>You cannot break anything. Take your time.</p>
+      </div>
+
+      <ol class="steps">
+        <li class="step">
+          <span class="step__num">1</span>
+          <h3>Pick a map</h3>
+          <p>Knowledge for subjects. Careers for jobs.</p>
+        </li>
+        <li class="step">
+          <span class="step__num">2</span>
+          <h3>Choose anything</h3>
+          <p>Tap a topic that looks interesting. There is no wrong choice.</p>
+        </li>
+        <li class="step">
+          <span class="step__num">3</span>
+          <h3>Tick off your steps</h3>
+          <p>Finished something? Tick it. It saves automatically on this device.</p>
+        </li>
+      </ol>
+
+      <p class="how__tip"><span>Tip</span> Inside either map, the <strong>Switch map</strong> button at the bottom-right brings you to the other one.</p>
+    </section>
+
+    <section class="progress" id="progress" aria-labelledby="progress-title">
+      <div class="section-head">
+        <p class="eyebrow">Your progress</p>
+        <h2 id="progress-title">Pick up where you left off</h2>
+        <p>Saved in this browser only. Nothing is sent anywhere.</p>
+      </div>
+
+      <div class="progress-grid">
+        <article class="progress-card progress-card--learn" data-trail="atlas">
+          <div class="progress-card__head">
+            <span class="dot dot--learn" aria-hidden="true"></span>
+            <h3>Knowledge map</h3>
+          </div>
+          <p id="atlas-progress">Nothing started yet.</p>
+          <a class="button button--small button--learn" id="atlas-resume" href="/memex/roadmap">Start learning</a>
+        </article>
+
+        <article class="progress-card progress-card--career" data-trail="careers">
+          <div class="progress-card__head">
+            <span class="dot dot--career" aria-hidden="true"></span>
+            <h3>Career map</h3>
+          </div>
+          <p id="careers-progress">Nothing started yet.</p>
+          <a class="button button--small button--career" id="careers-resume" href="/careermap/#/">Explore careers</a>
+        </article>
+      </div>
+    </section>
+
+    <section class="about" aria-labelledby="about-title">
+      <details>
+        <summary id="about-title">How are the two maps different?</summary>
+        <div class="about__body">
+          <p><strong>Knowledge map</strong> is for learning about subjects. <strong>Career map</strong> is for exploring jobs and the steps to get them.</p>
+          <p>They share this front page and a <strong>Switch map</strong> button. They keep separate content, search, and progress. Nothing from one map is mixed into the other.</p>
+        </div>
+      </details>
+    </section>
+  </main>
+
+  <footer class="site-foot">
+    <div class="site-foot__grid">
+      <div class="foot-brand">
+        <a class="brand brand--foot" href="/" aria-label="Meridian map room — home">
+          <span class="brand__mark" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none">
+              <circle cx="12" cy="12" r="8.7" stroke="currentColor" stroke-width="1.1" opacity=".75"/>
+              <ellipse cx="12" cy="12" rx="3.7" ry="8.7" stroke="currentColor" stroke-width=".9" opacity=".55"/>
+              <path d="M12 1.4v21.2M3.3 12h17.4" stroke="currentColor" stroke-width=".9" opacity=".55"/>
+              <circle cx="12" cy="12" r="1.7" fill="currentColor"/>
+            </svg>
+          </span>
+          <span class="brand__text">
+            <span class="brand__name">Meridian</span>
+            <span class="brand__tag">map room</span>
+          </span>
+        </a>
+        <p>Two maps. One easy entrance. Pick a path and go at your own pace.</p>
+      </div>
+
+      <div class="foot-col">
+        <h3>Explore</h3>
+        <a href="/memex/">Knowledge map</a>
+        <a href="/careermap/">Career map</a>
+        <a href="#how">How it works</a>
+        <a href="#progress">Your progress</a>
+      </div>
+
+      <div class="foot-col">
+        <h3>Sources</h3>
+        <a href="https://www.wikidata.org/" target="_blank" rel="noopener">Wikidata</a>
+        <a href="https://www.wikipedia.org/" target="_blank" rel="noopener">Wikipedia</a>
+        <a href="https://www.onetonline.org/" target="_blank" rel="noopener">O*NET OnLine</a>
+        <a href="https://www.aeaweb.org/econlit/jelCodes" target="_blank" rel="noopener">JEL classification</a>
+        <a href="https://www.bls.gov/ooh/" target="_blank" rel="noopener">BLS Occupational Outlook</a>
+      </div>
+    </div>
+
+    <div class="site-foot__base">
+      <span>No accounts. No tracking. Progress stays in this browser.</span>
+      <span>Built {{BUILD_STAMP}} from two separate collections.</span>
+    </div>
+  </footer>
+
+  <script src="/_portal/portal.js?v={{ASSET_VERSION}}" defer></script>
+</body>
+</html>

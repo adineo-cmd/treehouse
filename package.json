@@ -1,0 +1,17 @@
+{
+  "name": "meridian",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "description": "A shared front door for Memex and CareerMap \u2014 one shell, two separate atlases.",
+  "scripts": {
+    "build": "node scripts/build.mjs",
+    "bootstrap": "node scripts/bootstrap.mjs",
+    "start": "node scripts/serve.mjs",
+    "dev": "node scripts/serve.mjs",
+    "preview": "node scripts/serve.mjs"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}
