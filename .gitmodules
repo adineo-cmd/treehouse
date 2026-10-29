@@ -1,6 +1,6 @@
-[submodule "memex"]
-	path = memex
-	url = https://github.com/adineo-cmd/memex.git
-[submodule "careermap"]
-	path = careermap
-	url = https://github.com/adineo-cmd/careermap.git
+[submodule "library"]
+	path = library
+	url = https://github.com/adineo-cmd/library.git
+[submodule "compass"]
+	path = compass
+	url = https://github.com/adineo-cmd/compass.git

@@ -3,15 +3,15 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Meridian — pick a map and start exploring</title>
-  <meta name="description" content="Meridian is a simple front door to two maps: one for learning about the world, one for finding a career. Pick one and start exploring.">
+  <title>Treehouse — pick a map and start exploring</title>
+  <meta name="description" content="Treehouse is a simple front door to two maps: one for learning about the world, one for finding a career. Pick one and start exploring.">
   <meta name="theme-color" content="#0c110e">
   <script>
     (() => {
       const root = document.documentElement;
       let theme = "dark";
       try {
-        const saved = localStorage.getItem("meridian-theme") || localStorage.getItem("arbor-theme");
+        const saved = localStorage.getItem("treehouse-theme") || localStorage.getItem("arbor-theme");
         theme = saved === "light" || saved === "dark"
           ? saved
           : (window.matchMedia("(prefers-color-scheme: light)").matches ? "light" : "dark");
@@ -32,7 +32,7 @@
   <a class="skip-link" href="#choose">Skip to the two maps</a>
 
   <header class="site-head">
-    <a class="brand" href="/" aria-label="Meridian map room — home">
+    <a class="brand" href="/" aria-label="Treehouse map room — home">
       <span class="brand__mark" aria-hidden="true">
         <svg viewBox="0 0 24 24" fill="none">
           <circle cx="12" cy="12" r="8.7" stroke="currentColor" stroke-width="1.1" opacity=".75"/>
@@ -42,7 +42,7 @@
         </svg>
       </span>
       <span class="brand__text">
-        <span class="brand__name">Meridian</span>
+        <span class="brand__name">Treehouse</span>
         <span class="brand__tag">map room</span>
       </span>
     </a>
@@ -70,7 +70,7 @@
   <main>
     <section class="hero" aria-labelledby="hero-title">
       <div class="hero__copy">
-        <p class="eyebrow">Welcome to Meridian</p>
+        <p class="eyebrow">Welcome to Treehouse</p>
         <h1 id="hero-title"><span>What do you want</span><span>to explore?</span></h1>
         <p class="hero__lede">Pick one of the two maps below. You can always come back and try the other.</p>
 
@@ -124,7 +124,7 @@
       </div>
 
       <div class="choice-grid">
-        <a class="choice choice--learn" href="/memex/" aria-label="Knowledge map — learn about the world and start learning">
+        <a class="choice choice--learn" href="/library/" aria-label="Knowledge map — learn about the world and start learning">
           <span class="choice__top">
             <span class="choice__badge">Knowledge map</span>
             <span class="choice__icon" aria-hidden="true">
@@ -153,7 +153,7 @@
           <span class="choice__meta">{{ATLAS_FIELDS}} topics · {{ATLAS_PATHS}} learning paths</span>
         </a>
 
-        <a class="choice choice--career" href="/careermap/" aria-label="Career map — find a career and explore careers">
+        <a class="choice choice--career" href="/compass/" aria-label="Career map — find a career and explore careers">
           <span class="choice__top">
             <span class="choice__badge">Career map</span>
             <span class="choice__icon" aria-hidden="true">
@@ -187,8 +187,8 @@
       <div class="not-sure">
         <p><strong>Not sure which one?</strong> If you want to understand a subject, choose the Knowledge map. If you want to find a job, choose the Career map.</p>
         <div class="not-sure__links">
-          <a href="/memex/">I want to learn something <span aria-hidden="true">→</span></a>
-          <a href="/careermap/">I want to find a career <span aria-hidden="true">→</span></a>
+          <a href="/library/">I want to learn something <span aria-hidden="true">→</span></a>
+          <a href="/compass/">I want to find a career <span aria-hidden="true">→</span></a>
         </div>
       </div>
     </section>
@@ -229,13 +229,13 @@
       </div>
 
       <div class="progress-grid">
-        <article class="progress-card progress-card--learn" data-trail="atlas">
+        <article class="progress-card progress-card--learn" data-trail="library">
           <div class="progress-card__head">
             <span class="dot dot--learn" aria-hidden="true"></span>
             <h3>Knowledge map</h3>
           </div>
-          <p id="atlas-progress">Nothing started yet.</p>
-          <a class="button button--small button--learn" id="atlas-resume" href="/memex/roadmap">Start learning</a>
+          <p id="library-progress">Nothing started yet.</p>
+          <a class="button button--small button--learn" id="library-resume" href="/library/roadmap">Start learning</a>
         </article>
 
         <article class="progress-card progress-card--career" data-trail="careers">
@@ -244,7 +244,7 @@
             <h3>Career map</h3>
           </div>
           <p id="careers-progress">Nothing started yet.</p>
-          <a class="button button--small button--career" id="careers-resume" href="/careermap/#/">Explore careers</a>
+          <a class="button button--small button--career" id="careers-resume" href="/compass/#/">Explore careers</a>
         </article>
       </div>
     </section>
@@ -263,7 +263,7 @@
   <footer class="site-foot">
     <div class="site-foot__grid">
       <div class="foot-brand">
-        <a class="brand brand--foot" href="/" aria-label="Meridian map room — home">
+        <a class="brand brand--foot" href="/" aria-label="Treehouse map room — home">
           <span class="brand__mark" aria-hidden="true">
             <svg viewBox="0 0 24 24" fill="none">
               <circle cx="12" cy="12" r="8.7" stroke="currentColor" stroke-width="1.1" opacity=".75"/>
@@ -273,7 +273,7 @@
             </svg>
           </span>
           <span class="brand__text">
-            <span class="brand__name">Meridian</span>
+            <span class="brand__name">Treehouse</span>
             <span class="brand__tag">map room</span>
           </span>
         </a>
@@ -282,8 +282,8 @@
 
       <div class="foot-col">
         <h3>Explore</h3>
-        <a href="/memex/">Knowledge map</a>
-        <a href="/careermap/">Career map</a>
+        <a href="/library/">Knowledge map</a>
+        <a href="/compass/">Career map</a>
         <a href="#how">How it works</a>
         <a href="#progress">Your progress</a>
       </div>

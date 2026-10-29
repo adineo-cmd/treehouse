@@ -1,7 +1,7 @@
 #!/usr/bin/env node
-/* Bring the two atlases into this checkout.
+/* Bring the two apps into this checkout.
  *
- * They are submodules, not copies: `memex/` and `careermap/` each point at
+ * They are submodules, not copies: `library/` and `compass/` each point at
  * their own repository, which stays the place where that app's content and
  * data live. This only fetches whatever commit this repo pins.
  */
@@ -22,13 +22,13 @@ const run = (args, label) => {
 };
 
 if (!fs.existsSync(path.join(root, ".gitmodules"))) {
-  console.error("[bootstrap] no .gitmodules — this checkout is not Meridian.");
+  console.error("[bootstrap] no .gitmodules — this checkout is not Treehouse.");
   process.exit(1);
 }
 
 run(["submodule", "update", "--init", "--depth", "1"], "submodule update");
 
-for (const name of ["memex", "careermap"]) {
+for (const name of ["library", "compass"]) {
   const dir = path.join(root, name);
   const present = fs.existsSync(path.join(dir, "package.json"));
   console.log(`[bootstrap] ${name}: ${present ? "ready" : "missing files"}`);

@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-/* Build the Meridian shell around the two existing sites.
+/* Build the Treehouse shell around the two existing sites.
  *
  * The two projects are built with their own configs and their own data. This
  * script copies the results side by side, generates the portal from their
@@ -15,19 +15,16 @@ import { fileURLToPath } from "node:url";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 
-// Both atlases live inside this repo as submodules: memex/ and careermap/.
-// A sibling checkout still works for anyone who had the older layout.
+// Both apps live inside this repo as submodules: library/ and compass/.
 const locate = (name) => {
   const inside = path.join(root, name);
   if (fs.existsSync(path.join(inside, ".git"))) return inside;
-  const beside = path.join(path.resolve(root, ".."), name);
-  if (fs.existsSync(beside)) return beside;
-  console.error(`[meridian] ${name} is missing — run \`npm run bootstrap\` first.`);
+  console.error(`[treehouse] ${name}/ is missing — run \`npm run bootstrap\` first.`);
   process.exit(1);
 };
 
-const memexDir = locate("memex");
-const careermapDir = locate("careermap");
+const libraryDir = locate("library");
+const compassDir = locate("compass");
 const siteDir = path.join(root, "site");
 const srcDir = path.join(root, "src");
 
@@ -42,9 +39,9 @@ const assetVersion = crypto
   .digest("hex")
   .slice(0, 10);
 
-const log = (message) => console.log(`[meridian] ${message}`);
+const log = (message) => console.log(`[treehouse] ${message}`);
 const fail = (message) => {
-  console.error(`[meridian] ${message}`);
+  console.error(`[treehouse] ${message}`);
   process.exit(1);
 };
 
@@ -120,9 +117,9 @@ const injectShell = (html, version) => {
   return `${html}\n${tag}`;
 };
 
-/* A miniature of the Atlas fan. The colours and names come only from
-   memex/public/data/artifacts/structure.json. */
-const atlasMotif = (structure) => {
+/* A miniature of the Library fan. The colours and names come only from
+   library/public/data/artifacts/structure.json. */
+const libraryMotif = (structure) => {
   const trunks = structure.trunks;
   const width = 560;
   const height = 260;
@@ -143,23 +140,23 @@ const atlasMotif = (structure) => {
     ].join("");
   }).join("");
 
-  return `<svg viewBox="0 0 ${width} ${height}" role="img" aria-label="The nine trunks of the Atlas fanning out from a single root">
+  return `<svg viewBox="0 0 ${width} ${height}" role="img" aria-label="The nine trunks of the Library fanning out from a single root">
     <defs>
-      <radialGradient id="atlasRootGlow">
+      <radialGradient id="libraryRootGlow">
         <stop offset="0%" stop-color="#e8b76a" stop-opacity=".32"/>
         <stop offset="55%" stop-color="#e8b76a" stop-opacity=".07"/>
         <stop offset="100%" stop-color="#e8b76a" stop-opacity="0"/>
       </radialGradient>
     </defs>
-    <circle cx="${rootPoint.x}" cy="${rootPoint.y}" r="58" fill="url(#atlasRootGlow)"/>
+    <circle cx="${rootPoint.x}" cy="${rootPoint.y}" r="58" fill="url(#libraryRootGlow)"/>
     ${arcs}
     <circle cx="${rootPoint.x}" cy="${rootPoint.y}" r="4.2" fill="#c69068"/>
     <text class="motif-root-label" x="${rootPoint.x + 11}" y="${rootPoint.y + 3.4}">root</text>
   </svg>`;
 };
 
-/* A route through the 40 CareerMap roadmaps. Each dot takes its colour from
-   careermap/dist/api/roadmaps.json and nothing else. */
+/* A route through the 40 Compass roadmaps. Each dot takes its colour from
+   compass/dist/api/roadmaps.json and nothing else. */
 const careerMotif = (roadmapsPayload) => {
   const roadmaps = roadmapsPayload.roadmaps;
   const width = 560;
@@ -216,28 +213,28 @@ const careerMotif = (roadmapsPayload) => {
 /* ---------- build ---------- */
 
 if (!skipBuild) {
-  buildProject(memexDir, "memex");
-  buildProject(careermapDir, "careermap");
+  buildProject(libraryDir, "library");
+  buildProject(compassDir, "compass");
 } else {
   log("skipping framework builds (--skip-build)");
 }
 
-if (!fs.existsSync(path.join(memexDir, "dist"))) fail("memex/dist is missing. Run a full build.");
-if (!fs.existsSync(path.join(careermapDir, "dist"))) fail("careermap/dist is missing. Run a full build.");
+if (!fs.existsSync(path.join(libraryDir, "dist"))) fail("library/dist is missing. Run a full build.");
+if (!fs.existsSync(path.join(compassDir, "dist"))) fail("compass/dist is missing. Run a full build.");
 
 log("reading the two independent data sets…");
-const structure = readJson(path.join(memexDir, "public/data/artifacts/structure.json"));
-const memexRoadmaps = readJson(path.join(memexDir, "public/data/artifacts/roadmaps.json"));
-const careerRoadmaps = readJson(path.join(careermapDir, "dist/api/roadmaps.json"));
-const careerCareers = readJson(path.join(careermapDir, "dist/api/careers.json"));
-const careerFields = readJson(path.join(careermapDir, "dist/api/fields.json"));
+const structure = readJson(path.join(libraryDir, "public/data/artifacts/structure.json"));
+const libraryRoadmaps = readJson(path.join(libraryDir, "public/data/artifacts/roadmaps.json"));
+const careerRoadmaps = readJson(path.join(compassDir, "dist/api/roadmaps.json"));
+const careerCareers = readJson(path.join(compassDir, "dist/api/careers.json"));
+const careerFields = readJson(path.join(compassDir, "dist/api/fields.json"));
 
-const atlasStats = {
+const libraryStats = {
   disciplines: structure.nodeCount,
   domains: structure.nodes.filter((node) => node.kind === "domain").length,
   subdomains: structure.nodes.filter((node) => node.kind === "subdomain").length,
   trunks: structure.trunks.length,
-  paths: memexRoadmaps.index.length,
+  paths: libraryRoadmaps.index.length,
 };
 
 const careerStats = {
@@ -248,15 +245,15 @@ const careerStats = {
   jelFields: careerFields.codes.filter((code) => code.level === "sub").length,
 };
 
-log(`atlas: ${number(atlasStats.disciplines)} disciplines, ${number(atlasStats.domains)} domains, ${number(atlasStats.paths)} paths`);
+log(`library: ${number(libraryStats.disciplines)} disciplines, ${number(libraryStats.domains)} domains, ${number(libraryStats.paths)} paths`);
 log(`careers: ${number(careerStats.roadmaps)} roadmaps, ${number(careerStats.topics)} topics, ${number(careerStats.occupations)} occupations`);
 
 log("assembling site/…");
 fs.rmSync(siteDir, { recursive: true, force: true });
 fs.mkdirSync(siteDir, { recursive: true });
 
-copyDirectory(path.join(memexDir, "dist"), path.join(siteDir, "memex"), "memex");
-copyDirectory(path.join(careermapDir, "dist"), path.join(siteDir, "careermap"), "careermap");
+copyDirectory(path.join(libraryDir, "dist"), path.join(siteDir, "library"), "library");
+copyDirectory(path.join(compassDir, "dist"), path.join(siteDir, "compass"), "compass");
 
 fs.mkdirSync(path.join(siteDir, "_shell"), { recursive: true });
 fs.mkdirSync(path.join(siteDir, "_portal"), { recursive: true });
@@ -275,17 +272,17 @@ const buildStamp = new Intl.DateTimeFormat("en-GB", {
 
 let portal = fs.readFileSync(path.join(srcDir, "index.html"), "utf8");
 const replacements = {
-  "{{ATLAS_FIELDS}}": number(atlasStats.disciplines),
-  "{{ATLAS_DOMAINS}}": number(atlasStats.domains),
-  "{{ATLAS_SUBDOMAINS}}": number(atlasStats.subdomains),
-  "{{ATLAS_TRUNKS}}": number(atlasStats.trunks),
-  "{{ATLAS_PATHS}}": number(atlasStats.paths),
+  "{{ATLAS_FIELDS}}": number(libraryStats.disciplines),
+  "{{ATLAS_DOMAINS}}": number(libraryStats.domains),
+  "{{ATLAS_SUBDOMAINS}}": number(libraryStats.subdomains),
+  "{{ATLAS_TRUNKS}}": number(libraryStats.trunks),
+  "{{ATLAS_PATHS}}": number(libraryStats.paths),
   "{{CAREER_ROADMAPS}}": number(careerStats.roadmaps),
   "{{CAREER_TOPICS}}": number(careerStats.topics),
   "{{CAREER_OCCUPATIONS}}": number(careerStats.occupations),
   "{{CAREER_FAMILIES}}": number(careerStats.families),
   "{{CAREER_FIELDS}}": number(careerStats.jelFields),
-  "{{ATLAS_MOTIF}}": atlasMotif(structure),
+  "{{ATLAS_MOTIF}}": libraryMotif(structure),
   "{{CAREER_MOTIF}}": careerMotif(careerRoadmaps),
   "{{BUILD_STAMP}}": buildStamp,
   "{{ASSET_VERSION}}": assetVersion,
@@ -299,7 +296,7 @@ fs.writeFileSync(path.join(siteDir, "index.html"), portal);
 
 log("injecting the map-room tab into both apps…");
 let injected = 0;
-for (const app of ["memex", "careermap"]) {
+for (const app of ["library", "compass"]) {
   const appDir = path.join(siteDir, app);
   walk(appDir, (file) => {
     if (!file.endsWith(".html")) return;
@@ -319,21 +316,21 @@ const expect = (condition, message) => {
   if (!condition) failures.push(message);
 };
 
-expect(fs.existsSync(path.join(siteDir, "memex/data/artifacts/structure.json")), "Atlas artifacts are not under /memex");
-expect(fs.existsSync(path.join(siteDir, "careermap/api/roadmaps.json")), "CareerMap API is not under /careermap");
-expect(!fs.existsSync(path.join(siteDir, "memex/api")), "CareerMap API leaked into the Atlas tree");
-expect(!fs.existsSync(path.join(siteDir, "careermap/data/artifacts")), "Atlas artifacts leaked into the CareerMap tree");
+expect(fs.existsSync(path.join(siteDir, "library/data/artifacts/structure.json")), "Library artifacts are not under /library");
+expect(fs.existsSync(path.join(siteDir, "compass/api/roadmaps.json")), "Compass API is not under /compass");
+expect(!fs.existsSync(path.join(siteDir, "library/api")), "Compass API leaked into the Library tree");
+expect(!fs.existsSync(path.join(siteDir, "compass/data/artifacts")), "Library artifacts leaked into the Compass tree");
 
-const careerBundle = fs.readFileSync(path.join(siteDir, "careermap/js/app.js"), "utf8");
-const memexHome = fs.readFileSync(path.join(siteDir, "memex/index.html"), "utf8");
-expect(!careerBundle.includes("arbor-roadmap-"), "Atlas progress keys leaked into the CareerMap bundle");
-expect(!memexHome.includes("cm_done_"), "CareerMap progress keys leaked into the Atlas page");
+const careerBundle = fs.readFileSync(path.join(siteDir, "compass/js/app.js"), "utf8");
+const libraryHome = fs.readFileSync(path.join(siteDir, "library/index.html"), "utf8");
+expect(!careerBundle.includes("arbor-roadmap-"), "Library progress keys leaked into the Compass bundle");
+expect(!libraryHome.includes("cm_done_"), "Compass progress keys leaked into the Library page");
 
 if (failures.length) {
-  for (const failure of failures) console.error(`[meridian] isolation check failed: ${failure}`);
+  for (const failure of failures) console.error(`[treehouse] isolation check failed: ${failure}`);
   process.exit(1);
 }
 
 log(`isolation checks passed: two trees, two indexes, two progress namespaces`);
-log(`portal assembled: ${number(countFiles(path.join(siteDir, "memex"), ".html"))} Atlas pages, 1 CareerMap shell, ${injected} pages with the map-room tab`);
+log(`portal assembled: ${number(countFiles(path.join(siteDir, "library"), ".html"))} Library pages, 1 Compass shell, ${injected} pages with the map-room tab`);
 log("run `npm start` and open http://127.0.0.1:4321");

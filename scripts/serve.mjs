@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-/* Zero-dependency static server for the assembled Meridian site.
+/* Zero-dependency static server for the assembled Treehouse site.
  * It only serves files from site/. There is no API and no proxy: both apps
  * are already static, and their data stays under their own URL prefixes.
  */
@@ -78,7 +78,7 @@ const resolveFile = (urlPath) => {
 const notFound = (res) => {
   const body = `<!doctype html>
 <html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Not found — Meridian</title>
+<title>Not found — Treehouse</title>
 <style>
   body{margin:0;min-height:100vh;display:grid;place-items:center;background:#071011;color:#eee8d9;font:16px/1.6 ui-sans-serif,system-ui,sans-serif}
   main{max-width:34rem;padding:2rem}
@@ -86,7 +86,7 @@ const notFound = (res) => {
   a{color:#c69068}
 </style></head>
 <body><main><h1>This page is off the map.</h1>
-<p>The address does not belong to either collection. Try the <a href="/">map room</a>, the <a href="/memex/">Atlas</a>, or <a href="/careermap/">CareerMap</a>.</p>
+<p>The address does not belong to either collection. Try the <a href="/">map room</a>, the <a href="/library/">Library</a>, or <a href="/compass/">Compass</a>.</p>
 </main></body></html>`;
   res.writeHead(404, {
     "Content-Type": "text/html; charset=utf-8",
@@ -105,7 +105,7 @@ const server = http.createServer((req, res) => {
 
   const urlPath = new URL(req.url || "/", `http://${req.headers.host || "localhost"}`).pathname;
 
-  if (urlPath === "/memex" || urlPath === "/careermap") {
+  if (urlPath === "/library" || urlPath === "/compass") {
     res.writeHead(301, { Location: `${urlPath}/` });
     res.end();
     return;
@@ -140,6 +140,6 @@ const server = http.createServer((req, res) => {
 });
 
 server.listen(port, host, () => {
-  console.log(`[meridian] serving site/ at http://${host}:${port}`);
-  console.log("[meridian] /  map room   /memex/  Atlas   /careermap/  CareerMap");
+  console.log(`[treehouse] serving site/ at http://${host}:${port}`);
+  console.log("[treehouse] /  map room   /library/  Library   /compass/  Compass");
 });

@@ -1,15 +1,15 @@
-/* Meridian shell — a doorway, not a data merge.
+/* Treehouse shell — a doorway, not a data merge.
  *
  * This file is injected into every page of both sub-apps. It knows nothing
  * about either dataset. It only draws a clear "Switch map" button and links
  * back to the two isolated worlds.
  */
 (() => {
-  const HOST_ID = "meridian-shell";
+  const HOST_ID = "treehouse-shell";
   if (document.getElementById(HOST_ID)) return;
 
   const path = location.pathname;
-  const world = path.startsWith("/memex") ? "atlas" : path.startsWith("/careermap") ? "careers" : null;
+  const world = path.startsWith("/library") ? "library" : path.startsWith("/compass") ? "careers" : null;
   if (!world) return;
 
   const host = document.createElement("div");
@@ -20,7 +20,7 @@
 
   // Both apps declare data-theme, so the shell can follow the page exactly.
   // The control writes the same shared preference the apps use.
-  const THEME_KEY = "meridian-theme";
+  const THEME_KEY = "treehouse-theme";
   const themeIsLight = () => document.documentElement.getAttribute("data-theme") === "light";
 
   const syncTheme = () => {
@@ -41,7 +41,7 @@
     attributeFilter: ["data-theme"],
   });
 
-  const isAtlas = world === "atlas";
+  const isLibrary = world === "library";
 
   shadow.innerHTML = `
     <style>
@@ -60,9 +60,9 @@
         --shell-line: rgba(242, 236, 223, 0.16);
         --shell-line-strong: rgba(242, 236, 223, 0.32);
         --shell-copper: #c69068;
-        --shell-atlas: #9ccfb0;
+        --shell-library: #9ccfb0;
         --shell-career: #f5c518;
-        --current: ${isAtlas ? "var(--shell-atlas)" : "var(--shell-career)"};
+        --current: ${isLibrary ? "var(--shell-library)" : "var(--shell-career)"};
         --sans: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
         --serif: "Cormorant Garamond", "Iowan Old Style", "Palatino Linotype", Georgia, serif;
         --mono: "IBM Plex Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
@@ -314,7 +314,7 @@
         box-shadow: 0 0 0 4px color-mix(in srgb, var(--accent) 14%, transparent);
       }
 
-      .world--atlas { --accent: var(--shell-atlas); }
+      .world--library { --accent: var(--shell-library); }
       .world--careers { --accent: var(--shell-career); }
 
       .world__name {
@@ -435,7 +435,7 @@
         </svg>
       </button>
 
-      <button class="tab" type="button" aria-expanded="false" aria-controls="meridian-panel" aria-label="Switch map" title="Switch maps">
+      <button class="tab" type="button" aria-expanded="false" aria-controls="treehouse-panel" aria-label="Switch map" title="Switch maps">
         <span class="tab__mark" aria-hidden="true">
           <svg viewBox="0 0 24 24" fill="none">
             <circle cx="12" cy="12" r="8.6" stroke="currentColor" stroke-width="1.2" opacity=".85"/>
@@ -449,33 +449,33 @@
       </button>
     </div>
 
-    <section class="panel" id="meridian-panel" hidden aria-label="Switch maps">
+    <section class="panel" id="treehouse-panel" hidden aria-label="Switch maps">
       <div class="panel__head">
         <div>
-          <span class="panel__eyebrow">Meridian</span>
+          <span class="panel__eyebrow">Treehouse</span>
           <h2 class="panel__title">Switch maps</h2>
         </div>
         <button class="panel__close" type="button" aria-label="Close the map switcher">&#10005;</button>
       </div>
 
-      <p class="panel__lede">You are in the ${isAtlas ? "Knowledge map" : "Career map"}. Pick another map below.</p>
+      <p class="panel__lede">You are in the ${isLibrary ? "Knowledge map" : "Career map"}. Pick another map below.</p>
 
       <nav class="worlds" aria-label="Maps">
-        <a class="world world--atlas" href="/memex/" data-world="atlas"${isAtlas ? ' aria-current="page"' : ""}>
+        <a class="world world--library" href="/library/" data-world="library"${isLibrary ? ' aria-current="page"' : ""}>
           <span class="world__dot" aria-hidden="true"></span>
           <span>
             <span class="world__name">Knowledge map</span>
             <span class="world__desc">Science, history, art and more</span>
           </span>
-          ${isAtlas ? '<span class="world__badge">You are here</span>' : ""}
+          ${isLibrary ? '<span class="world__badge">You are here</span>' : ""}
         </a>
-        <a class="world world--careers" href="/careermap/" data-world="careers"${!isAtlas ? ' aria-current="page"' : ""}>
+        <a class="world world--careers" href="/compass/" data-world="careers"${!isLibrary ? ' aria-current="page"' : ""}>
           <span class="world__dot" aria-hidden="true"></span>
           <span>
             <span class="world__name">Career map</span>
             <span class="world__desc">Jobs, skills and next steps</span>
           </span>
-          ${!isAtlas ? '<span class="world__badge">You are here</span>' : ""}
+          ${!isLibrary ? '<span class="world__badge">You are here</span>' : ""}
         </a>
       </nav>
 
@@ -544,7 +544,7 @@
   shadow.querySelectorAll(".world").forEach((link) => {
     link.addEventListener("click", () => {
       try {
-        localStorage.setItem("meridian-last-world", link.dataset.world || "");
+        localStorage.setItem("treehouse-last-world", link.dataset.world || "");
       } catch {
         /* private mode — the link still works */
       }

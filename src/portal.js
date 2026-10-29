@@ -5,10 +5,10 @@
  */
 (() => {
   const ATLAS_PREFIX = "arbor-roadmap-";
-  const THEME_KEY = "meridian-theme";
+  const THEME_KEY = "treehouse-theme";
   const root = document.documentElement;
 
-  /* One theme control, one shared preference. Atlas, CareerMap and the shell
+  /* One theme control, one shared preference. Library, Compass and the shell
      read the same key, so switching here carries across the whole site. */
   const themeButton = document.querySelector(".theme-toggle");
   const themeMeta = document.querySelector('meta[name="theme-color"]');
@@ -124,11 +124,11 @@
 
   renderTrail({
     prefix: ATLAS_PREFIX,
-    progressId: "atlas-progress",
-    linkId: "atlas-resume",
-    trailSelector: '.progress-card[data-trail="atlas"]',
-    singleHref: (slug) => `/memex/roadmap/${encodeURIComponent(slug)}`,
-    indexHref: "/memex/roadmap",
+    progressId: "library-progress",
+    linkId: "library-resume",
+    trailSelector: '.progress-card[data-trail="library"]',
+    singleHref: (slug) => `/library/roadmap/${encodeURIComponent(slug)}`,
+    indexHref: "/library/roadmap",
     emptyLabel: "Start learning",
     resumeLabel: "Continue learning",
   });
@@ -138,8 +138,8 @@
     progressId: "careers-progress",
     linkId: "careers-resume",
     trailSelector: '.progress-card[data-trail="careers"]',
-    singleHref: (slug) => `/careermap/#/roadmap/${encodeURIComponent(slug)}`,
-    indexHref: "/careermap/#/",
+    singleHref: (slug) => `/compass/#/roadmap/${encodeURIComponent(slug)}`,
+    indexHref: "/compass/#/",
     emptyLabel: "Explore careers",
     resumeLabel: "Continue career path",
   });
