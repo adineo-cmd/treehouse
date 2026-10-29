@@ -8,8 +8,12 @@
   const HOST_ID = "treehouse-shell";
   if (document.getElementById(HOST_ID)) return;
 
+  // The build injects this before the script: "" at a domain root or
+  // "/treehouse" on a project Pages site.
+  const SITE_BASE = window.__TREEHOUSE_BASE__ || "";
+
   const path = location.pathname;
-  const world = path.startsWith("/library") ? "library" : path.startsWith("/compass") ? "careers" : null;
+  const world = path.startsWith(`${SITE_BASE}/library`) ? "library" : path.startsWith(`${SITE_BASE}/compass`) ? "careers" : null;
   if (!world) return;
 
   const host = document.createElement("div");
@@ -461,7 +465,7 @@
       <p class="panel__lede">You are in the ${isLibrary ? "Knowledge map" : "Career map"}. Pick another map below.</p>
 
       <nav class="worlds" aria-label="Maps">
-        <a class="world world--library" href="/library/" data-world="library"${isLibrary ? ' aria-current="page"' : ""}>
+        <a class="world world--library" href="${SITE_BASE}/library/" data-world="library"${isLibrary ? ' aria-current="page"' : ""}>
           <span class="world__dot" aria-hidden="true"></span>
           <span>
             <span class="world__name">Knowledge map</span>
@@ -469,7 +473,7 @@
           </span>
           ${isLibrary ? '<span class="world__badge">You are here</span>' : ""}
         </a>
-        <a class="world world--careers" href="/compass/" data-world="careers"${!isLibrary ? ' aria-current="page"' : ""}>
+        <a class="world world--careers" href="${SITE_BASE}/compass/" data-world="careers"${!isLibrary ? ' aria-current="page"' : ""}>
           <span class="world__dot" aria-hidden="true"></span>
           <span>
             <span class="world__name">Career map</span>
@@ -480,8 +484,8 @@
       </nav>
 
       <div class="panel__links">
-        <a href="/">&larr; Back to the start</a>
-        <a href="/#how">How it works</a>
+        <a href="${SITE_BASE}/">&larr; Back to the start</a>
+        <a href="${SITE_BASE}/#how">How it works</a>
       </div>
       <p class="panel__foot">Your progress stays separate in each map.</p>
     </section>

@@ -8,6 +8,9 @@
   const THEME_KEY = "treehouse-theme";
   const root = document.documentElement;
 
+  /* Empty at a domain root, "/treehouse" on a project Pages site. */
+  const SITE_BASE = window.__TREEHOUSE_BASE__ || "";
+
   /* One theme control, one shared preference. Library, Compass and the shell
      read the same key, so switching here carries across the whole site. */
   const themeButton = document.querySelector(".theme-toggle");
@@ -127,8 +130,8 @@
     progressId: "library-progress",
     linkId: "library-resume",
     trailSelector: '.progress-card[data-trail="library"]',
-    singleHref: (slug) => `/library/roadmap/${encodeURIComponent(slug)}`,
-    indexHref: "/library/roadmap",
+    singleHref: (slug) => `${SITE_BASE}/library/roadmap/${encodeURIComponent(slug)}`,
+    indexHref: `${SITE_BASE}/library/roadmap`,
     emptyLabel: "Start learning",
     resumeLabel: "Continue learning",
   });
@@ -138,8 +141,8 @@
     progressId: "careers-progress",
     linkId: "careers-resume",
     trailSelector: '.progress-card[data-trail="careers"]',
-    singleHref: (slug) => `/compass/#/roadmap/${encodeURIComponent(slug)}`,
-    indexHref: "/compass/#/",
+    singleHref: (slug) => `${SITE_BASE}/compass/#/roadmap/${encodeURIComponent(slug)}`,
+    indexHref: `${SITE_BASE}/compass/#/`,
     emptyLabel: "Explore careers",
     resumeLabel: "Continue career path",
   });

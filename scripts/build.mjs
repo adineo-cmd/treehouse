@@ -15,6 +15,10 @@ import { fileURLToPath } from "node:url";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 
+// Empty for a domain root, or "/<repo>" for a GitHub project Pages site.
+const siteBase = (process.env.SITE_BASE || "").replace(/\/+$/, "");
+const appBase = (name) => `${siteBase}/${name}/`;
+
 // Both apps live inside this repo as submodules: library/ and compass/.
 const locate = (name) => {
   const inside = path.join(root, name);
@@ -112,7 +116,8 @@ const countFiles = (directory, extension) => {
 
 const injectShell = (html, version) => {
   if (html.includes("/_shell/shell.js")) return html;
-  const tag = `<script src="/_shell/shell.js?v=${version}" defer></script>`;
+  const base = JSON.stringify(siteBase);
+  const tag = `<script>window.__TREEHOUSE_BASE__=${base};</script><script src="${siteBase}/_shell/shell.js?v=${version}" defer></script>`;
   if (/<\/body>/i.test(html)) return html.replace(/<\/body>/i, `${tag}</body>`);
   return `${html}\n${tag}`;
 };
@@ -213,6 +218,10 @@ const careerMotif = (roadmapsPayload) => {
 /* ---------- build ---------- */
 
 if (!skipBuild) {
+  // Astro emits every asset and page URL under this base. Standalone builds
+  // leave the env unset and keep their own /library/ and /compass/ roots.
+  process.env.LIBRARY_BASE = appBase("library");
+  process.env.COMPASS_BASE = appBase("compass");
   buildProject(libraryDir, "library");
   buildProject(compassDir, "compass");
 } else {
@@ -249,6 +258,7 @@ log(`library: ${number(libraryStats.disciplines)} disciplines, ${number(libraryS
 log(`careers: ${number(careerStats.roadmaps)} roadmaps, ${number(careerStats.topics)} topics, ${number(careerStats.occupations)} occupations`);
 
 log("assembling site/…");
+if (siteBase) log(`project Pages base: ${siteBase}/`);
 fs.rmSync(siteDir, { recursive: true, force: true });
 fs.mkdirSync(siteDir, { recursive: true });
 
@@ -286,10 +296,17 @@ const replacements = {
   "{{CAREER_MOTIF}}": careerMotif(careerRoadmaps),
   "{{BUILD_STAMP}}": buildStamp,
   "{{ASSET_VERSION}}": assetVersion,
+  "{{SITE_BASE}}": siteBase,
 };
 
 for (const [token, value] of Object.entries(replacements)) {
   portal = portal.split(token).join(value);
+}
+
+// A project Pages site serves the artifact under /<repo>/, so the portal's
+// root-absolute links need that prefix. The apps already emit their own base.
+if (siteBase) {
+  portal = portal.replace(/(\b(?:href|src)=")\/(?!\/)/g, `$1${siteBase}/`);
 }
 
 fs.writeFileSync(path.join(siteDir, "index.html"), portal);
