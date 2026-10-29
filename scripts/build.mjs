@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-/* Build the Treehouse shell around the two existing sites.
+/* Build the Treehouse front door around the two existing sites.
  *
  * The two projects are built with their own configs and their own data. This
  * script copies the results side by side, generates the portal from their
@@ -39,7 +39,6 @@ const assetVersion = crypto
   .createHash("sha1")
   .update(fs.readFileSync(path.join(srcDir, "portal.css")))
   .update(fs.readFileSync(path.join(srcDir, "portal.js")))
-  .update(fs.readFileSync(path.join(srcDir, "shell.js")))
   .digest("hex")
   .slice(0, 10);
 
@@ -64,12 +63,12 @@ const escapeHtml = (value) =>
 const readJson = (file) => JSON.parse(fs.readFileSync(file, "utf8"));
 const number = (value) => Number(value).toLocaleString("en-US");
 
-const run = (cwd, command, commandArgs, label) => {
+const run = (cwd, command, commandArgs, label, extraEnv = {}) => {
   log(`${label}…`);
   const result = spawnSync(command, commandArgs, {
     cwd,
     encoding: "utf8",
-    env: { ...process.env, FORCE_COLOR: "0", NO_COLOR: "1" },
+    env: { ...process.env, ...extraEnv, FORCE_COLOR: "0", NO_COLOR: "1" },
   });
 
   if (result.status !== 0) {
@@ -88,9 +87,9 @@ const ensureDependencies = (cwd, label) => {
   run(cwd, "npm", ["install", "--no-audit", "--no-fund"], `${label} dependencies`);
 };
 
-const buildProject = (cwd, label) => {
+const buildProject = (cwd, label, extraEnv = {}) => {
   ensureDependencies(cwd, label);
-  run(cwd, "npm", ["run", "build"], label);
+  run(cwd, "npm", ["run", "build"], label, extraEnv);
 };
 
 const copyDirectory = (from, to, label) => {
@@ -112,14 +111,6 @@ const countFiles = (directory, extension) => {
     if (file.endsWith(extension)) count += 1;
   });
   return count;
-};
-
-const injectShell = (html, version) => {
-  if (html.includes("/_shell/shell.js")) return html;
-  const base = JSON.stringify(siteBase);
-  const tag = `<script>window.__TREEHOUSE_BASE__=${base};</script><script src="${siteBase}/_shell/shell.js?v=${version}" defer></script>`;
-  if (/<\/body>/i.test(html)) return html.replace(/<\/body>/i, `${tag}</body>`);
-  return `${html}\n${tag}`;
 };
 
 /* A miniature of the Library fan. The colours and names come only from
@@ -218,12 +209,21 @@ const careerMotif = (roadmapsPayload) => {
 /* ---------- build ---------- */
 
 if (!skipBuild) {
-  // Astro emits every asset and page URL under this base. Standalone builds
-  // leave the env unset and keep their own /library/ and /compass/ roots.
-  process.env.LIBRARY_BASE = appBase("library");
-  process.env.COMPASS_BASE = appBase("compass");
-  buildProject(libraryDir, "library");
-  buildProject(compassDir, "compass");
+  // Each app gets its own base, plus links to the front door and the other map.
+  // Standalone builds leave these unset and show no cross-site links.
+  const treehouseHome = `${siteBase}/`;
+  buildProject(libraryDir, "library", {
+    LIBRARY_BASE: appBase("library"),
+    TREEHOUSE_HOME: treehouseHome,
+    TREEHOUSE_SWITCH: appBase("compass"),
+    TREEHOUSE_SWITCH_LABEL: "Compass — jobs and careers",
+  });
+  buildProject(compassDir, "compass", {
+    COMPASS_BASE: appBase("compass"),
+    TREEHOUSE_HOME: treehouseHome,
+    TREEHOUSE_SWITCH: appBase("library"),
+    TREEHOUSE_SWITCH_LABEL: "Library — the knowledge map",
+  });
 } else {
   log("skipping framework builds (--skip-build)");
 }
@@ -265,10 +265,8 @@ fs.mkdirSync(siteDir, { recursive: true });
 copyDirectory(path.join(libraryDir, "dist"), path.join(siteDir, "library"), "library");
 copyDirectory(path.join(compassDir, "dist"), path.join(siteDir, "compass"), "compass");
 
-fs.mkdirSync(path.join(siteDir, "_shell"), { recursive: true });
 fs.mkdirSync(path.join(siteDir, "_portal"), { recursive: true });
 
-fs.copyFileSync(path.join(srcDir, "shell.js"), path.join(siteDir, "_shell/shell.js"));
 fs.copyFileSync(path.join(srcDir, "portal.css"), path.join(siteDir, "_portal/portal.css"));
 fs.copyFileSync(path.join(srcDir, "portal.js"), path.join(siteDir, "_portal/portal.js"));
 fs.copyFileSync(path.join(srcDir, "favicon.svg"), path.join(siteDir, "favicon.svg"));
@@ -311,21 +309,6 @@ if (siteBase) {
 
 fs.writeFileSync(path.join(siteDir, "index.html"), portal);
 
-log("injecting the map-room tab into both apps…");
-let injected = 0;
-for (const app of ["library", "compass"]) {
-  const appDir = path.join(siteDir, app);
-  walk(appDir, (file) => {
-    if (!file.endsWith(".html")) return;
-    const html = fs.readFileSync(file, "utf8");
-    const next = injectShell(html, assetVersion);
-    if (next !== html) {
-      fs.writeFileSync(file, next);
-      injected += 1;
-    }
-  });
-}
-
 /* ---------- isolation checks ---------- */
 
 const failures = [];
@@ -349,5 +332,5 @@ if (failures.length) {
 }
 
 log(`isolation checks passed: two trees, two indexes, two progress namespaces`);
-log(`portal assembled: ${number(countFiles(path.join(siteDir, "library"), ".html"))} Library pages, 1 Compass shell, ${injected} pages with the map-room tab`);
+log(`portal assembled: ${number(countFiles(path.join(siteDir, "library"), ".html"))} Library pages and the Compass app`);
 log("run `npm start` and open http://127.0.0.1:4321");

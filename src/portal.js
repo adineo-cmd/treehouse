@@ -11,7 +11,7 @@
   /* Empty at a domain root, "/treehouse" on a project Pages site. */
   const SITE_BASE = window.__TREEHOUSE_BASE__ || "";
 
-  /* One theme control, one shared preference. Library, Compass and the shell
+  /* One theme control, one shared preference. The portal, Library and Compass
      read the same key, so switching here carries across the whole site. */
   const themeButton = document.querySelector(".theme-toggle");
   const themeMeta = document.querySelector('meta[name="theme-color"]');

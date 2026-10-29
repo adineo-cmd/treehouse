@@ -1,73 +1,141 @@
 # Treehouse
 
-A shared front door for two existing sites:
+**One front door to two different maps of the same idea: what there is to learn, and what you can do with it.**
 
-- **Library** — the knowledge map at `/library/`
-- **Compass** — the career map at `/compass/`
+- **Library** — a field atlas of 28,649 disciplines, grown from twelve trunks.
+- **Compass** — 40 career roadmaps, 928 topics and 143 occupations, linked back to fields of study.
 
-The combination happens at the shell: one entrance, one visual system, one
-address. The data does not move. Each app keeps its own build, its own content
-directory, its own search index, its own API, and its own `localStorage`
-namespace. Treehouse never merges records from the two repositories.
+Live at **https://adineo-cmd.github.io/treehouse/**
+
+Both maps are complete, independent sites. Treehouse gives them one address, one
+visual language and one way to move between them — without mixing a single record.
+
+## The two maps
+
+| | Library | Compass |
+| --- | --- | --- |
+| Answers | *What is there to learn?* | *Where can it take me?* |
+| Shape | A tree: root → trunk → domain → subdomain | A route: field → roadmap → occupation |
+| Size | 28,649 disciplines in 12 trunks | 40 roadmaps, 928 topics, 143 occupations |
+| Lives at | [`/library/`](https://adineo-cmd.github.io/treehouse/library/) | [`/compass/`](https://adineo-cmd.github.io/treehouse/compass/) |
+| Repo | [adineo-cmd/library](https://github.com/adineo-cmd/library) | [adineo-cmd/compass](https://github.com/adineo-cmd/compass) |
+
+Each one also deploys on its own:
+
+- https://adineo-cmd.github.io/library/
+- https://adineo-cmd.github.io/compass/
+
+## How the front door works
+
+The portal at `/` is generated at build time from each app's own artifacts — the
+counts, the trunk fan and the career route are drawn from Library's
+`structure.json` and Compass's `roadmaps.json`, never hard-coded.
+
+Once you are inside a map, the switch lives **in that map's own chrome**, not in
+a floating overlay:
+
+- **Library** — a *Switch map* tab in the main nav, an entry in the mobile
+  sidebar, and a *Treehouse* link in the footer.
+- **Compass** — the same three placements: main nav, sidebar, footer.
+
+All three links share one theme preference (`treehouse-theme`), so light or dark
+follows you from the portal into either map and back.
+
+Standalone builds simply omit these links — the app repos stay usable on their
+own, with no trace of the shell.
 
 ## Repository layout
 
 ```
 treehouse/
-├── library/     ← submodule → adineo-cmd/library
-├── compass/     ← submodule → adineo-cmd/compass
+├── library/     submodule → adineo-cmd/library
+├── compass/     submodule → adineo-cmd/compass
 ├── scripts/
-├── src/
-└── README.md
+│   ├── build.mjs      builds both apps and assembles site/
+│   ├── bootstrap.mjs  fetches the submodules
+│   └── serve.mjs      static server for local preview
+├── src/               the portal (index.html, portal.css, portal.js)
+└── .github/workflows/pages.yml
 ```
 
-Both sites are submodules, so they stay independent repositories with their
-own content, history and data — that is where future data goes. This repo owns
-the shell that presents them under one address.
+The two apps are **submodules**, not copies. Their history, issues and data stay
+in their own repositories; this repo only pins the commit it builds from.
 
-## Build
-
-Fetch both submodules, then build:
+## Running locally
 
 ```bash
 npm run bootstrap   # git submodule update --init --depth 1
-npm run build       # installs each app's dependencies itself
+npm run build       # installs each app's deps, builds, assembles site/
+npm start           # http://127.0.0.1:4321
 ```
 
-`npm run build` can be narrowed: `--skip-build` assembles the site from
-already-built `dist/` trees without running either app's build.
+Useful variations:
 
 ```bash
-npm run build
+npm run build -- --skip-build   # re-assemble site/ from existing dist/ trees
+SITE_BASE=/treehouse npm run build   # reproduce the GitHub Pages URLs locally
 ```
 
-What it does:
+`SITE_BASE` is what makes the site portable: empty means "served at a domain
+root", `/<repo>` means "served as a GitHub project site". The app builds receive
+`LIBRARY_BASE` and `COMPASS_BASE` derived from it, so every asset, link and deep
+route resolves under either one.
 
-1. Builds Library with its existing Astro config (`base: /library/`).
-2. Builds Compass with its existing Astro config (`base: /compass/`),
-   which also seeds SQLite and freezes the static API under `/compass/api/`.
-3. Copies both `dist/` trees into `site/library` and `site/compass`.
-4. Generates the portal at `/` from each project's own artifacts.
-5. Injects `/_shell/shell.js` into every page of both apps. That script only
-   draws the floating **Switch map** button; it never reads either dataset.
+## Deployment
 
-## Run
+[`.github/workflows/pages.yml`](.github/workflows/pages.yml) runs on every push
+to `main`:
+
+1. Checks out this repo **with both submodules**.
+2. Installs each app from its own lockfile (`npm ci --prefix …`).
+3. Reads the Pages base path from `actions/configure-pages` and passes it as
+   `SITE_BASE`.
+4. Builds the combined site and publishes `site/` through the Pages artifact flow.
+
+To ship a change to a map, push it to that map's repo, then bump the submodule
+pointer here:
 
 ```bash
-npm start
+git -C library pull origin main     # or commit there first
+git add library && git commit -m "Bump Library"
+git push
 ```
 
-Open http://127.0.0.1:4321.
+The workflow picks up the new pinned commit and redeploys.
+
+## Adding a third map
+
+The shell is not hard-wired to two sites.
+
+1. Add the repo as a submodule under its own folder.
+2. In `scripts/build.mjs`, call `buildProject()` for it with its base and its
+   `TREEHOUSE_*` link variables.
+3. Add a copy step into `site/` and a card on the portal.
+4. In the new app, print the same `TREEHOUSE_HOME` / `TREEHOUSE_SWITCH` links in
+   its own header, sidebar and footer — the two existing apps show the pattern.
+
+No data has to move, and the existing maps need no changes beyond their link
+target.
 
 ## Data boundary
 
+This is the part worth protecting.
+
 | Concern | Library | Compass |
 | --- | --- | --- |
-| Content | `library/public/data/artifacts` | `compass/content` + frozen JSON API |
+| Content | `public/data/artifacts/` | `content/` + frozen JSON API |
 | Search | its own structure index | its own `search-index.json` |
-| Progress | `arbor-roadmap-*` | `cm_done_*` |
+| Progress | `arbor-roadmap-*` keys | `cm_done_*` keys |
 | URL space | `/library/` | `/compass/` |
 
-The portal only projects counts from each side into separate card templates.
-There is no combined search index, no cross-referenced record, and no shared
-progress store. The one shared thing is the doorway.
+The build fails if Compass's API appears inside the Library tree (or the
+reverse), or if one side's progress keys leak into the other's bundle. There is
+no combined search index, no cross-referenced record and no shared progress
+store — only a shared doorway.
+
+## Credits
+
+Structure and field data are derived from [Wikidata](https://www.wikidata.org/),
+released under CC0. Career families follow the JEL classification. Both are
+built offline and committed as static artifacts; the deployed site makes no
+third-party requests except web fonts.
